@@ -8,8 +8,10 @@ STATE_FILE="/root/.openclaw/update-safe.state"
 LOG_FILE="/root/.openclaw/update-safe.log"
 
 pre_ver=""
+snap=""
 if [[ -f "$STATE_FILE" ]]; then
   pre_ver="$(grep '^pre_version=' "$STATE_FILE" | tail -n1 | cut -d= -f2- || true)"
+  snap="$(grep '^snapshot=' "$STATE_FILE" | tail -n1 | cut -d= -f2- || true)"
 fi
 
 if [[ -z "$pre_ver" || "$pre_ver" == "unknown" ]]; then
@@ -18,9 +20,15 @@ if [[ -z "$pre_ver" || "$pre_ver" == "unknown" ]]; then
   exit 1
 fi
 
-echo "[1/3] 回滚 openclaw@$pre_ver"
-export NODE_OPTIONS="--max-old-space-size=1024"
-npm install -g "openclaw@${pre_ver}" --no-fund --no-audit --maxsockets 1 --loglevel warn
+echo "[1/4] 回滚"
+if [[ -n "$snap" && -f "$snap" ]]; then
+  echo "[info] 使用快照回滚: $snap"
+  tar -xzf "$snap" -C / || true
+else
+  echo "[info] 无快照，使用npm回滚 openclaw@$pre_ver"
+  export NODE_OPTIONS="--max-old-space-size=768"
+  npm install -g "openclaw@${pre_ver}" --no-fund --no-audit --maxsockets 1 --loglevel warn
+fi
 
 echo "[2/4] 修复命令入口（若缺失）"
 if ! command -v openclaw >/dev/null 2>&1; then
