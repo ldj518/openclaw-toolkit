@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-OPS_DIR="/root/.openclaw/workspace/ops"
-RESCUE_DIR="/root/.openclaw/workspace/rescue-kit/bin"
+OPS_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [[ -d "$OPS_DIR/../rescue-kit/bin" ]]; then
+  RESCUE_DIR="$OPS_DIR/../rescue-kit/bin"
+else
+  RESCUE_DIR="/root/.openclaw/workspace/rescue-kit/bin"
+fi
 
 ok(){ echo -e "\n✅ $1\n"; }
 err(){ echo -e "\n❌ $1\n"; }
@@ -108,13 +112,14 @@ while true; do
 3) 插件/技能管理（开关与说明）
 4) 守护/定时任务（自动巡检与自动恢复）
 5) Antfarm 冷配置（平时不运行，需用时再启动，省资源）
-6) VPS->我的电脑（傻瓜向导：按1/2/3步走）
+6) VPS->我的电脑向导（仅电脑连接/上传）
 7) XBot（X/Twitter 自动化机器人状态）
 8) 文档中心（每项功能是干嘛的）
-9) 一步一步向导模式（按步骤执行，不会乱）
+9) 全功能向导模式（电脑+云备份）
 10) 健康状态总览（服务+告警+守护）
 11) 升级安全模式/一键恢复（OOM兜底）
 12) 新机器一键初始化（迁移后即用）
+13) 工具包自检（查缺失/失败原因）
 0) 退出
 EOF
   read -r -p "请选择: " m
@@ -124,7 +129,7 @@ EOF
     3) menu_plugins_skills ;;
     4) bash "$OPS_DIR/install-cron.sh"; press ;;
     5) bash "$OPS_DIR/antfarm-cold-status.sh"; press ;;
-    6) bash "$OPS_DIR/task-wizard.sh" ;;
+    6) bash "$OPS_DIR/task-wizard.sh" pc ;;
     7) bash "$OPS_DIR/xbot-status.sh"; press ;;
     8) clear; ls -1 "$OPS_DIR"/README-*.md 2>/dev/null || true; echo; read -r -p "输入文档文件名(如 README-OPS-ZH.md): " f; [[ -f "$OPS_DIR/$f" ]] && cat "$OPS_DIR/$f" || echo "未找到"; press ;;
     9) bash "$OPS_DIR/task-wizard.sh" ;;
@@ -158,6 +163,7 @@ EOF
         echo "已取消"
       fi
       press ;;
+    13) bash "$OPS_DIR/toolkit-selfcheck.sh"; press ;;
     0) echo "已退出"; exit 0 ;;
     *) echo "无效选择"; sleep 1 ;;
   esac

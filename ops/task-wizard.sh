@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-OPS_DIR="/root/.openclaw/workspace/ops"
+OPS_DIR="$(cd "$(dirname "$0")" && pwd)"
 ENV_PC="/root/.secrets/pc-bridge.env"
 ENV_CLOUD="/root/.secrets/cloud-backup.env"
+MODE="${1:-all}"
 
 press(){ read -r -p "回车继续..." _; }
 
@@ -201,6 +202,14 @@ EOF
     esac
   done
 }
+
+if [[ "$MODE" == "pc" ]]; then
+  wizard_pc_backup
+  exit 0
+elif [[ "$MODE" == "cloud" ]]; then
+  wizard_cloud_backup
+  exit 0
+fi
 
 while true; do
   clear
