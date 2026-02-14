@@ -33,6 +33,7 @@ for f in \
   "$OPS_DIR/openai-codex-oauth-setup.sh" \
   "$OPS_DIR/chat-knowledge.sh" \
   "$OPS_DIR/chat-timeline-report.sh" \
+  "$OPS_DIR/chat-decision-report.sh" \
   "$RESCUE_DIR/disaster-backup.sh" \
   "$RESCUE_DIR/disaster-restore.sh" \
   "$RESCUE_DIR/disaster-verify.sh"
