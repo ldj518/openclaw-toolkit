@@ -30,6 +30,7 @@ for f in \
   "$OPS_DIR/update-lowmem-atomic.sh" \
   "$OPS_DIR/offline-recover.sh" \
   "$OPS_DIR/gateway-real-status.sh" \
+  "$OPS_DIR/openai-codex-oauth-setup.sh" \
   "$RESCUE_DIR/disaster-backup.sh" \
   "$RESCUE_DIR/disaster-restore.sh" \
   "$RESCUE_DIR/disaster-verify.sh"

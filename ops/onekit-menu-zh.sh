@@ -60,6 +60,7 @@ menu_openclaw(){
 4) Gateway 重启（网关异常时常用）
 5) OpenClaw 专用诊断（查版本/服务/日志）
 6) OpenClaw 低内存一键救援安装（2G机器重装修复）
+7) OpenAI Codex OAuth 一键配置（打开网址登录并粘贴授权）
 0) 返回上级
 EOF
     read -r -p "选择: " c
@@ -70,6 +71,7 @@ EOF
       4) run "gateway restart" openclaw gateway restart; press ;;
       5) need "$RESCUE_DIR/openclaw-diagnose.sh" && run "openclaw 诊断" bash "$RESCUE_DIR/openclaw-diagnose.sh"; press ;;
       6) read -r -p "会修改系统环境，输入 YES 继续: " y; [[ "$y" == "YES" ]] && need "$RESCUE_DIR/openclaw-rescue-install.sh" && run "openclaw 救援安装" bash "$RESCUE_DIR/openclaw-rescue-install.sh" || echo "已取消"; press ;;
+      7) need "$OPS_DIR/openai-codex-oauth-setup.sh" && bash "$OPS_DIR/openai-codex-oauth-setup.sh"; press ;;
       0) return ;;
       *) echo "无效选择"; sleep 1 ;;
     esac
