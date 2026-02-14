@@ -121,6 +121,7 @@ while true; do
 12) 新机器一键初始化（迁移后即用）
 13) 工具包自检（查缺失/失败原因）
 14) 离线恢复专用（OpenClaw命令丢失/服务起不来）
+15) 网关真实状态验收（systemd+端口+RPC）
 0) 退出
 EOF
   read -r -p "请选择: " m
@@ -222,6 +223,7 @@ EOF
         esac
       done
       ;;
+    15) bash "$OPS_DIR/gateway-real-status.sh"; press ;;
     0) echo "已退出"; exit 0 ;;
     *) echo "无效选择"; sleep 1 ;;
   esac

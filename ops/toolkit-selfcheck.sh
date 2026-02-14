@@ -27,7 +27,9 @@ for f in \
   "$OPS_DIR/update-safe.sh" \
   "$OPS_DIR/update-recover.sh" \
   "$OPS_DIR/update-by-tarball.sh" \
+  "$OPS_DIR/update-lowmem-atomic.sh" \
   "$OPS_DIR/offline-recover.sh" \
+  "$OPS_DIR/gateway-real-status.sh" \
   "$RESCUE_DIR/disaster-backup.sh" \
   "$RESCUE_DIR/disaster-restore.sh" \
   "$RESCUE_DIR/disaster-verify.sh"
