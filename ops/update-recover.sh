@@ -22,11 +22,25 @@ echo "[1/3] 回滚 openclaw@$pre_ver"
 export NODE_OPTIONS="--max-old-space-size=1024"
 npm install -g "openclaw@${pre_ver}" --no-fund --no-audit --maxsockets 1 --loglevel warn
 
-echo "[2/3] 重启服务"
+echo "[2/4] 修复命令入口（若缺失）"
+if ! command -v openclaw >/dev/null 2>&1; then
+  if [[ -f /usr/lib/node_modules/openclaw/dist/index.js ]]; then
+    cat > /usr/bin/openclaw <<'EOF'
+#!/usr/bin/env bash
+exec node /usr/lib/node_modules/openclaw/dist/index.js "$@"
+EOF
+    chmod +x /usr/bin/openclaw
+    echo "[ok] 已修复 /usr/bin/openclaw"
+  else
+    echo "[x] 找不到 /usr/lib/node_modules/openclaw/dist/index.js" >&2
+  fi
+fi
+
+echo "[3/4] 重启服务"
 systemctl --user restart openclaw-gateway.service
 sleep 2
 
-echo "[3/3] 验收"
+echo "[4/4] 验收"
 openclaw --version || true
 systemctl --user is-active openclaw-gateway.service || true
 openclaw gateway status || true
