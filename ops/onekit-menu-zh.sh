@@ -231,13 +231,14 @@ EOF
       while true; do
         clear
         cat <<'EOF'
-===== 聊天记录检索与归档（第二阶段） =====
+===== 聊天记录检索与归档（第三阶段） =====
 1) 按关键词搜索（直接找原话）
 2) 查看最近用户消息
 3) 生成主题索引（升级/备份/OAuth/Discord/SSH/AI）
 4) 按天数范围搜索（如最近7天）
 5) 自动标签视图（按主题打标）
 6) 问答检索（输入问题，给命中+建议）
+7) 一键导出主题时间线报告（可直接转发）
 0) 返回上级
 EOF
         read -r -p "选择: " k
@@ -248,6 +249,7 @@ EOF
           4) read -r -p "输入关键词: " kw; read -r -p "最近几天(默认7): " d; d=${d:-7}; read -r -p "条数(默认40): " n; n=${n:-40}; bash "$OPS_DIR/chat-knowledge.sh" search-days "$kw" "$d" "$n"; press ;;
           5) read -r -p "条数(默认80): " n; n=${n:-80}; bash "$OPS_DIR/chat-knowledge.sh" tags "$n"; press ;;
           6) read -r -p "输入你的问题: " q; bash "$OPS_DIR/chat-knowledge.sh" ask "$q"; press ;;
+          7) read -r -p "输入主题(升级/备份/OAuth/Discord/SSH/AI或自定义): " t; read -r -p "最近几天(默认30): " d; d=${d:-30}; bash "$OPS_DIR/chat-timeline-report.sh" "$t" "$d"; press ;;
           0) break ;;
           *) echo "无效选择"; sleep 1 ;;
         esac
