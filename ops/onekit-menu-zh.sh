@@ -176,6 +176,8 @@ EOF
 2) 指定灾难包恢复
 3) 仅修复 openclaw 命令入口
 4) 重启 gateway 并验收
+5) 部分恢复（配置/记忆/脚本）
+6) 按日期编号选择完整恢复包
 0) 返回上级
 EOF
         read -r -p "选择: " r
@@ -195,6 +197,24 @@ EOF
             fi
             press ;;
           4) systemctl --user restart openclaw-gateway.service || true; sleep 2; systemctl --user is-active openclaw-gateway.service || true; openclaw --version 2>/dev/null || true; openclaw gateway status 2>/dev/null || true; press ;;
+          5)
+            echo "可选 part: config | memory | ops | skills | rescue | small-all"
+            read -r -p "输入备份包路径(回车=最新): " p
+            if [[ -z "$p" ]]; then p="$(ls -1t /root/backups/openclaw-disaster-*.tgz 2>/dev/null | head -n1)"; fi
+            read -r -p "输入 part: " part
+            bash "$OPS_DIR/config-restore.sh" "$p" "$part"
+            press ;;
+          6)
+            mapfile -t arr < <(ls -1t /root/backups/openclaw-disaster-*.tgz 2>/dev/null)
+            if [[ ${#arr[@]} -eq 0 ]]; then echo "[x] 没有可用备份包"; press; continue; fi
+            i=1; for f in "${arr[@]}"; do echo "$i) $(basename "$f")"; i=$((i+1)); done
+            read -r -p "选择编号: " idx
+            if [[ "$idx" =~ ^[0-9]+$ ]] && (( idx>=1 && idx<=${#arr[@]} )); then
+              bash "$OPS_DIR/offline-recover.sh" "${arr[$((idx-1))]}"
+            else
+              echo "无效编号"
+            fi
+            press ;;
           0) break ;;
           *) echo "无效选择"; sleep 1 ;;
         esac
