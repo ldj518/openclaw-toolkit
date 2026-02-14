@@ -1,26 +1,51 @@
 # 升级失败（OOM/Killed）一键恢复方案
 
-## 1) 安全升级（推荐）
+## 固定SOP（2G机器强制执行）
+
+1. **先做完整备份（必做）**
+2. **优先 Tarball 升级**（不走 `npm install -g`）
+3. **任何异常立刻恢复**（不要反复硬升）
+4. **连续两次失败，直接走新系统冷安装**
+
+---
+
+## 1) 升级前完整备份（必做）
 ```bash
-bash /root/.openclaw/workspace/ops/update-safe.sh
+bash /root/.openclaw/workspace/openclaw-toolkit/ops/disaster-backup.sh /root/backups
 ```
-- 自动低内存参数
-- 升级前自动备份
+
+## 2) 优先升级方式：Tarball（推荐）
+```bash
+bash /root/.openclaw/workspace/openclaw-toolkit/ops/update-by-tarball.sh 2026.2.13
+# 或 latest
+# bash /root/.openclaw/workspace/openclaw-toolkit/ops/update-by-tarball.sh
+```
+
+## 3) 安全升级（次选）
+```bash
+bash /root/.openclaw/workspace/openclaw-toolkit/ops/update-safe.sh
+```
+- 自动快照
 - 升级后自动验收
-- 验收失败自动回滚到升级前版本
+- 失败自动回滚
 
-## 2) 如果升级中断/被 kill，直接一键恢复
+## 4) 升级中断/被 kill：一键恢复
 ```bash
-bash /root/.openclaw/workspace/ops/update-recover.sh
+bash /root/.openclaw/workspace/openclaw-toolkit/ops/update-recover.sh
 ```
 
-## 3) 手工兜底（极端情况）
+## 5) 命令都坏了：离线恢复
 ```bash
-export NODE_OPTIONS="--max-old-space-size=1024"
-npm install -g openclaw@2026.2.12 --no-fund --no-audit --maxsockets 1
-systemctl --user restart openclaw-gateway.service
-openclaw gateway status
+bash /root/.openclaw/workspace/openclaw-toolkit/ops/offline-recover.sh
+# 或指定包
+# bash /root/.openclaw/workspace/openclaw-toolkit/ops/offline-recover.sh /root/backups/xxx.tgz
 ```
+
+## 6) 何时放弃就地升级，改冷安装
+满足任一条件立即改新系统冷安装：
+- 连续 2 次升级失败
+- `openclaw` 命令持续丢失
+- `gateway` 多次无法维持 active
 
 ## 关键文件
 - 状态文件: `/root/.openclaw/update-safe.state`
