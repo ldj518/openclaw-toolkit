@@ -1,0 +1,3 @@
+bindPort = 443
+auth.method = "token"
+auth.token = "6ba210caecb49942c34dca4ed6b28271"
