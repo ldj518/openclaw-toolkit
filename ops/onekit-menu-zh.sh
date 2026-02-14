@@ -120,6 +120,7 @@ while true; do
 11) 升级安全模式/一键恢复（OOM兜底）
 12) 新机器一键初始化（迁移后即用）
 13) 工具包自检（查缺失/失败原因）
+14) 离线恢复专用（OpenClaw命令丢失/服务起不来）
 0) 退出
 EOF
   read -r -p "请选择: " m
@@ -141,14 +142,16 @@ EOF
 ===== 升级安全模式 / 一键恢复 =====
 1) 安全升级（低内存 + 自动回滚）
 2) 一键恢复（升级失败/OOM后）
-3) 查看升级恢复说明文档
+3) Tarball升级（低内存，不走npm install）
+4) 查看升级恢复说明文档
 0) 返回上级
 EOF
         read -r -p "选择: " u
         case "$u" in
           1) bash "$OPS_DIR/update-safe.sh"; press ;;
           2) bash "$OPS_DIR/update-recover.sh"; press ;;
-          3) cat "$OPS_DIR/README-UPDATE-RECOVER-ZH.md"; press ;;
+          3) read -r -p "输入目标版本(默认 latest): " v; v=${v:-latest}; bash "$OPS_DIR/update-by-tarball.sh" "$v"; press ;;
+          4) cat "$OPS_DIR/README-UPDATE-RECOVER-ZH.md"; press ;;
           0) break ;;
           *) echo "无效选择"; sleep 1 ;;
         esac
@@ -164,6 +167,39 @@ EOF
       fi
       press ;;
     13) bash "$OPS_DIR/toolkit-selfcheck.sh"; press ;;
+    14)
+      while true; do
+        clear
+        cat <<'EOF'
+===== 离线恢复专用 =====
+1) 一键离线恢复（用最新灾难包）
+2) 指定灾难包恢复
+3) 仅修复 openclaw 命令入口
+4) 重启 gateway 并验收
+0) 返回上级
+EOF
+        read -r -p "选择: " r
+        case "$r" in
+          1) bash "$OPS_DIR/offline-recover.sh"; press ;;
+          2) read -r -p "输入备份包路径(.tgz): " p; bash "$OPS_DIR/offline-recover.sh" "$p"; press ;;
+          3)
+            if [[ -f /usr/lib/node_modules/openclaw/dist/index.js ]]; then
+              cat > /usr/bin/openclaw <<'EOF'
+#!/usr/bin/env bash
+exec node /usr/lib/node_modules/openclaw/dist/index.js "$@"
+EOF
+              chmod +x /usr/bin/openclaw
+              echo "[ok] 已修复 /usr/bin/openclaw"
+            else
+              echo "[x] 缺少 /usr/lib/node_modules/openclaw/dist/index.js"
+            fi
+            press ;;
+          4) systemctl --user restart openclaw-gateway.service || true; sleep 2; systemctl --user is-active openclaw-gateway.service || true; openclaw --version 2>/dev/null || true; openclaw gateway status 2>/dev/null || true; press ;;
+          0) break ;;
+          *) echo "无效选择"; sleep 1 ;;
+        esac
+      done
+      ;;
     0) echo "已退出"; exit 0 ;;
     *) echo "无效选择"; sleep 1 ;;
   esac

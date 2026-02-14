@@ -26,6 +26,8 @@ for f in \
   "$OPS_DIR/offline-alert-check.sh" \
   "$OPS_DIR/update-safe.sh" \
   "$OPS_DIR/update-recover.sh" \
+  "$OPS_DIR/update-by-tarball.sh" \
+  "$OPS_DIR/offline-recover.sh" \
   "$RESCUE_DIR/disaster-backup.sh" \
   "$RESCUE_DIR/disaster-restore.sh" \
   "$RESCUE_DIR/disaster-verify.sh"
