@@ -143,7 +143,8 @@ EOF
 1) 安全升级（低内存 + 自动回滚）
 2) 一键恢复（升级失败/OOM后）
 3) Tarball升级（低内存首选，不走npm install）
-4) 查看升级恢复说明文档（含2G机器固定SOP）
+4) 超低内存原子升级（先停服务，失败自动回滚并拉起）
+5) 查看升级恢复说明文档（含2G机器固定SOP）
 0) 返回上级
 EOF
         read -r -p "选择: " u
@@ -151,7 +152,8 @@ EOF
           1) bash "$OPS_DIR/update-safe.sh"; press ;;
           2) bash "$OPS_DIR/update-recover.sh"; press ;;
           3) read -r -p "输入目标版本(默认 latest): " v; v=${v:-latest}; bash "$OPS_DIR/update-by-tarball.sh" "$v"; press ;;
-          4) cat "$OPS_DIR/README-UPDATE-RECOVER-ZH.md"; press ;;
+          4) read -r -p "输入目标版本(默认 latest): " v; v=${v:-latest}; bash "$OPS_DIR/update-lowmem-atomic.sh" "$v"; press ;;
+          5) cat "$OPS_DIR/README-UPDATE-RECOVER-ZH.md"; press ;;
           0) break ;;
           *) echo "无效选择"; sleep 1 ;;
         esac
