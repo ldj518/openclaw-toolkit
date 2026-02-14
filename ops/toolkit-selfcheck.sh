@@ -31,6 +31,7 @@ for f in \
   "$OPS_DIR/offline-recover.sh" \
   "$OPS_DIR/gateway-real-status.sh" \
   "$OPS_DIR/openai-codex-oauth-setup.sh" \
+  "$OPS_DIR/chat-knowledge.sh" \
   "$RESCUE_DIR/disaster-backup.sh" \
   "$RESCUE_DIR/disaster-restore.sh" \
   "$RESCUE_DIR/disaster-verify.sh"

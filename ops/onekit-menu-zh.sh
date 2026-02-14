@@ -124,6 +124,7 @@ while true; do
 13) 工具包自检（查缺失/失败原因）
 14) 离线恢复专用（OpenClaw命令丢失/服务起不来）
 15) 网关真实状态验收（systemd+端口+RPC）
+16) 聊天记录检索与归档（关键词直达）
 0) 退出
 EOF
   read -r -p "请选择: " m
@@ -226,6 +227,26 @@ EOF
       done
       ;;
     15) bash "$OPS_DIR/gateway-real-status.sh"; press ;;
+    16)
+      while true; do
+        clear
+        cat <<'EOF'
+===== 聊天记录检索与归档 =====
+1) 按关键词搜索（直接找原话）
+2) 查看最近用户消息
+3) 生成主题索引（升级/备份/OAuth/Discord/SSH）
+0) 返回上级
+EOF
+        read -r -p "选择: " k
+        case "$k" in
+          1) read -r -p "输入关键词: " kw; read -r -p "条数(默认40): " n; n=${n:-40}; bash "$OPS_DIR/chat-knowledge.sh" search "$kw" "$n"; press ;;
+          2) read -r -p "条数(默认30): " n; n=${n:-30}; bash "$OPS_DIR/chat-knowledge.sh" recent "$n"; press ;;
+          3) bash "$OPS_DIR/chat-knowledge.sh" index; press ;;
+          0) break ;;
+          *) echo "无效选择"; sleep 1 ;;
+        esac
+      done
+      ;;
     0) echo "已退出"; exit 0 ;;
     *) echo "无效选择"; sleep 1 ;;
   esac
